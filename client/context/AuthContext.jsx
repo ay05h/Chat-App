@@ -97,12 +97,15 @@ export const AuthProvider = ({ children }) => {
           withCredentials: true,
         }
       );
-      console.log(data);
+
       if (data.success) {
         setAuthUser(null);
         SetOnlineUsers([]);
         toast.success(data.message);
-        socket.disconnect();
+        if (socket) {
+          socket.disconnect();
+          setSocket(null);
+        }
       } else {
         toast.error(data.message);
       }
@@ -125,21 +128,38 @@ export const AuthProvider = ({ children }) => {
 
   //Connect socket Function
   const connectSocket = (userData) => {
-    if (!userData || socket?.connected) return;
+    if (!userData) return;
+    if (socket && socket.connected) return;
+
     const newSocket = io(backendUrl, {
-      query: {
-        userId: userData._id,
-      },
+      query: { userId: userData._id },
+      withCredentials: true,
     });
-    setSocket(newSocket);
+
+    newSocket.on("connect", () => {
+      console.log("Socket connected:", newSocket.id);
+    });
+
+    newSocket.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+    });
 
     newSocket.on("getOnlineUsers", (userIds) => {
       SetOnlineUsers(userIds);
     });
+
+    setSocket(newSocket);
   };
 
   useEffect(() => {
     checkAuth();
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
+    };
   }, []);
 
   const value = {

@@ -27,9 +27,11 @@ export const ChatProvider = ({ children }) => {
 
   const getMessages = async (userId) => {
     try {
-      const { data } = await axios.get(`/api/v1/messages/${userId}/messages`);
+      const { data } = await axios.get(`/api/v1/messages/${userId}`, {
+        withCredentials: true,
+      });
       if (data.success) {
-        setMessages(data.messages);
+        setMessages(data.data);
       }
     } catch (error) {
       toast.error(error.message);
@@ -43,9 +45,8 @@ export const ChatProvider = ({ children }) => {
         msg,
         { withCredentials: true }
       );
-      console.log("send message :", data);
       if (data.success) {
-        setMessages((prevMsg) => [...preMsg, data.newMessage]);
+        setMessages((prevMsg) => [...prevMsg, data.data]);
       } else {
         toast.error(data.message);
       }
@@ -58,7 +59,7 @@ export const ChatProvider = ({ children }) => {
     if (!socket) return;
     socket.on("newMessage", (newMessage) => {
       if (selectedUser && newMessage.sender === selectedUser._id) {
-        newMessage.seen = true;
+        newMessage.isRead = true;
         setMessages((prevMsg) => [...prevMsg, newMessage]);
         axios.put(`/api/v1/messages/messages/${newMessage._id}/read`);
       } else {
@@ -105,6 +106,7 @@ export const ChatProvider = ({ children }) => {
     sendMessage,
     setSelectedUser,
     getMessages,
+    setUsers,
   };
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

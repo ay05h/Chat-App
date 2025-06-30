@@ -18,6 +18,7 @@ const ChatContainer = () => {
     await sendMessage({ text: input.trim() });
     setInput("");
   };
+
   const handleSendImage = async (e) => {
     const file = e.target.files[0];
     if (!file || !file.type.startsWith("image/")) {
@@ -69,44 +70,49 @@ const ChatContainer = () => {
 
       {/* chat area */}
       <div className="flex flex-col h-[calc(100%-120px)] overflow-y-scroll p-3 pb-6">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`flex items-end gap-2 justify-end ${
-              msg.senderId !== authUser._id && "flex-row-reverse"
-            }`}
-          >
-            {msg.image ? (
-              <img
-                src={msg.image}
-                alt=""
-                className="max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8"
-              />
-            ) : (
-              <p
-                className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${
-                  msg.senderId !== authUser._id
-                    ? "rounded-bl-none"
-                    : "rounded-br-none"
-                }`}
-              >
-                {msg.text}
-              </p>
-            )}
-            <div className=" text-center text-xs">
-              <img
-                src={
-                  msg.senderId === authUser._id
-                    ? authUser?.profilePic || assets.avatar_icon
-                    : selectedUser?.profilePic || assets.avatar_icon
-                }
-                alt=""
-                className=" w-7 rounded-full"
-              />
-              <p className="text-gray-500">{formatTime(msg.createdAt)}</p>
+        {messages?.map((msg, index) => {
+          return (
+            <div
+              key={index}
+              className={`flex items-end gap-2 justify-end ${
+                msg?.sender !== authUser._id && "flex-row-reverse"
+              }`}
+            >
+              {/* Show image if exists */}
+              {msg?.content?.image ? (
+                <img
+                  src={msg.content.image}
+                  alt=""
+                  className="max-w-[230px] border border-gray-700 rounded-lg overflow-hidden mb-8"
+                />
+              ) : (
+                <p
+                  className={`p-2 max-w-[200px] md:text-sm font-light rounded-lg mb-8 break-all bg-violet-500/30 text-white ${
+                    msg?.sender !== authUser._id
+                      ? "rounded-bl-none"
+                      : "rounded-br-none"
+                  }`}
+                >
+                  {msg?.content?.text}
+                </p>
+              )}
+
+              {/* Sender avatar and timestamp */}
+              <div className="text-center text-xs">
+                <img
+                  src={
+                    msg?.sender === authUser._id
+                      ? authUser?.profilePic || assets.avatar_icon
+                      : selectedUser?.profilePic || assets.avatar_icon
+                  }
+                  alt=""
+                  className="w-7 rounded-full"
+                />
+                <p className="text-gray-500">{formatTime(msg?.createdAt)}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={scrollEnd}></div>
       </div>
 
