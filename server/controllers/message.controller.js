@@ -3,7 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import mongoose from "mongoose";
 import { uploadToCloudinary } from "../utils/Cloudinary.js";
-import { io, socketToUserMap } from "../index.js";
+import { io, socketToUserMap } from "../server.js";
 import User from "../models/user.model.js";
 const getUsersForCurrentUser = async (req, res) => {
   try {
