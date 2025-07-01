@@ -52,9 +52,9 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
     },
-    process.env.Access_TOKEN_SECRET,
+    process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: process.env.Access_TOKEN_EXPIRY,
+      expiresIn: process.env.ACCESS_TOKEN_SECRET,
     }
   );
 };
