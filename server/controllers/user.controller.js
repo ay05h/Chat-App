@@ -234,7 +234,7 @@ const searchUsers = async (req, res) => {
     const users = await User.find({
       fullName: { $regex: query, $options: "i" },
       _id: { $ne: req.user._id },
-    }).select("_id fullName avatar");
+    }).select("_id fullName avatar bio");
 
     res.status(200).json(new ApiResponse(200, { users }, "Users fetched"));
   } catch (error) {

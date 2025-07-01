@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import assets from "../assets/assets";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -101,7 +100,7 @@ const ProfilePage = () => {
                     src={
                       selectedImg
                         ? URL.createObjectURL(selectedImg)
-                        : assets.avatar_icon
+                        : `https://ui-avatars.com/api/?name=${name}&background=6366f1&color=fff&bold=true`
                     }
                     alt="avatar"
                     className="w-16 h-16 rounded-full object-cover border-2 border-blue-400/50"
@@ -216,7 +215,8 @@ const ProfilePage = () => {
                   src={
                     selectedImg
                       ? URL.createObjectURL(selectedImg)
-                      : authUser?.profilePic || assets.logo_icon
+                      : authUser?.profilePic ||
+                        `https://ui-avatars.com/api/?name=${authUser?.fullName}&background=6366f1&color=fff&bold=true`
                   }
                   alt="profile preview"
                   className="w-32 h-32 rounded-full object-cover border-4 border-blue-400/30 shadow-xl"

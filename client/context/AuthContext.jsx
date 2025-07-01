@@ -56,8 +56,6 @@ export const AuthProvider = ({ children }) => {
       const user = data.data.user;
       if (data.success && user) {
         setAuthUser(user);
-        console.log(user);
-        console.log(authUser);
         connectSocket(user);
         toast.success(data.message);
       } else {

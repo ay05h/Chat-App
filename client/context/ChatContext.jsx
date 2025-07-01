@@ -15,10 +15,8 @@ export const ChatProvider = ({ children }) => {
       const { data } = await axios.get("/api/v1/messages/users", {
         withCredentials: true,
       });
-      console.log("users data : ", data);
       if (data.success) {
         setUsers(data.data.users);
-        //set Unseen messages
       }
     } catch (error) {
       toast.message(error.message);

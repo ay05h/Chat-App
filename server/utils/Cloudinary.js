@@ -1,4 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
+dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -9,7 +11,7 @@ cloudinary.config({
 const uploadToCloudinary = async (img) => {
   try {
     if (!img) {
-      confirm.log("File not Found!");
+      console.log("File not Found!");
       return null;
     }
     const response = await cloudinary.uploader.upload(img, {
@@ -17,6 +19,7 @@ const uploadToCloudinary = async (img) => {
     });
     return response;
   } catch (error) {
+    console.log(error.message);
     return null;
   }
 };

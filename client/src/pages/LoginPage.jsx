@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import assets from "./../assets/assets";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { Send } from "lucide-react";
+import { Typewriter } from "react-simple-typewriter";
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,6 @@ const LoginPage = () => {
     setError("");
     setLoading(true);
     try {
-      // data.loginEmail and data.loginPassword available here
       const credentials = {
         email: data.loginEmail,
         password: data.loginPassword,
@@ -33,9 +33,26 @@ const LoginPage = () => {
   };
 
   return (
-    <div className=" min-h-screen bg-cover  bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col backdrop-blur-2xl">
+    <div className=" min-h-screen flex items-center justify-start gap-8 sm:justify-evenly max-sm:flex-col max-sm:gap-1 backdrop-blur-2xl">
       {/* logo */}
-      <img src={assets.logo_big} alt="logo" className="w-[min(30vw,250px)]" />
+
+      <div className=" min-w-[240px] flex flex-col items-center justify-center space-y-4 py-10">
+        <div className="w-30 h-30 pr-2 pt-2 md:pr-5 md:pt-5 md:w-55 md:h-55 bg-gradient-to-br from-violet-700/30 to-blue-700/30 backdrop-blur-xl flex justify-center items-center rounded-full shadow-lg animate-pulse">
+          <Send className="w-20 h-20 md:w-45 md:h-45 text-white/60" />
+        </div>
+        <div className="text-xl md:text-2xl font-semibold text-gray-400">
+          <Typewriter
+            words={["Welcome to Chatterly"]}
+            loop={0}
+            cursor
+            cursorStyle="_"
+            typeSpeed={100}
+            deleteSpeed={75}
+            delaySpeed={2000}
+            cursorColor="#8245ec"
+          />
+        </div>
+      </div>
 
       {/* login */}
       <div className=" border-2 bg-white/8 text-white border-gray-500 p-6 flex flex-col gap-4 justify-center items-center rounded-2xl w-full max-w-xs lg:max-w-sm ">

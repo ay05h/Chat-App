@@ -3,14 +3,14 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
-import bgImage from "./assets/bgImage.svg";
 import SignupPage from "./pages/SignupPage";
 import { Toaster } from "react-hot-toast";
 import { AuthContext } from "../context/AuthContext";
 const App = () => {
   const { authUser } = useContext(AuthContext);
   return (
-    <div className="bg-contain" style={{ backgroundImage: `url(${bgImage})` }}>
+    // <div className="bg-contain" style={{ backgroundImage: `url(${bgImage})` }}>
+    <div className="bh-contain bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950">
       <Toaster />
       <Routes>
         <Route

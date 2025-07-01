@@ -1,8 +1,10 @@
 import React, { useContext, useState } from "react";
-import assets from "./../assets/assets";
+import avatar_icon from "./../assets/avatar_icon.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../context/AuthContext";
+import { Send, ArrowLeft } from "lucide-react";
+import { Typewriter } from "react-simple-typewriter";
 
 const SignupPage = () => {
   const [details, setDetails] = useState(false);
@@ -58,9 +60,6 @@ const SignupPage = () => {
           setLoading(false);
         }
       };
-
-      // ❌ Remove this — otherwise signup is called before FileReader finishes
-      // await signup(credentials);
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -68,12 +67,23 @@ const SignupPage = () => {
   };
 
   return (
-    <div className=" min-h-screen bg-cover  bg-center flex items-center justify-center gap-8 sm:justify-evenly max-sm:flex-col-reverse backdrop-blur-2xl">
+    <div className=" min-h-screen flex items-center  gap-8 justify-evenly max-sm:flex-col-reverse max-sm:gap-0 backdrop-blur-2xl">
       {/* SignUp */}
       <div className=" border-2 bg-white/8 text-white border-gray-500 p-6 flex flex-col gap-4 justify-center items-center rounded-2xl w-full max-w-xs lg:max-w-sm ">
-        <h1 className="text-center text-2xl sm:text-3xl font-bold leading-tight text-white">
-          SignUp
-        </h1>
+        <div className="relative flex items-center justify-center w-full">
+          {details && (
+            <button
+              onClick={() => setDetails(false)}
+              className="absolute left-0 hover:bg-white/10 rounded-full transition-colors "
+            >
+              <ArrowLeft className="w-7 h-7 text-white" />
+            </button>
+          )}
+          <h1 className="text-center text-2xl sm:text-3xl font-bold leading-tight text-white">
+            SignUp
+          </h1>
+        </div>
+
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p className="text-red-600 text-sm text-center">{error}</p>
@@ -83,8 +93,6 @@ const SignupPage = () => {
           onSubmit={handleSubmit(handleSignUp)}
           className="space-y-4 w-full"
         >
-          {/* Fullname */}
-
           {!details && (
             <div className="w-full max-w-md">
               <label
@@ -211,9 +219,7 @@ const SignupPage = () => {
               />
               <img
                 src={
-                  selectedImg
-                    ? URL.createObjectURL(selectedImg)
-                    : assets.avatar_icon
+                  selectedImg ? URL.createObjectURL(selectedImg) : avatar_icon
                 }
                 alt="avatar"
                 className={`w-12 h-12 ${selectedImg && "rounded-full"}`}
@@ -266,7 +272,23 @@ const SignupPage = () => {
       </div>
 
       {/* logo */}
-      <img src={assets.logo_big} alt="logo" className="w-[min(30vw,250px)]" />
+      <div className=" min-w-[240px] flex flex-col items-center justify-center space-y-4 py-10">
+        <div className="w-30 h-30 pr-2 pt-2 md:pr-5 md:pt-5 md:w-55 md:h-55 bg-gradient-to-br from-violet-700/30 to-blue-700/30 backdrop-blur-xl flex justify-center items-center rounded-full shadow-lg animate-pulse">
+          <Send className="w-20 h-20 md:w-45 md:h-45 text-white/60" />
+        </div>
+        <div className="text-xl md:text-2xl font-semibold text-gray-400">
+          <Typewriter
+            words={["Welcome to Chatterly"]}
+            loop={0}
+            cursor
+            cursorStyle="_"
+            typeSpeed={100}
+            deleteSpeed={75}
+            delaySpeed={2000}
+            cursorColor="#8245ec"
+          />
+        </div>
+      </div>
     </div>
   );
 };

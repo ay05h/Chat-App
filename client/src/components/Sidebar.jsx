@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import assets from "../assets/assets";
+import { Typewriter } from "react-simple-typewriter";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import axios from "axios";
-
+import { Send, MoreVertical, Search } from "lucide-react";
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, setUsers } =
     useContext(ChatContext);
@@ -87,7 +87,10 @@ const Sidebar = () => {
         ${isFromSearch ? "border-l-2 border-blue-400" : ""}`}
     >
       <img
-        src={user.profilePic || assets.avatar_icon}
+        src={
+          user.profilePic ||
+          `https://ui-avatars.com/api/?name=${user.fullName}&background=6366f1&color=fff&bold=true`
+        }
         alt="Profile"
         className="w-[35px] aspect-[1/1] rounded-full object-cover"
       />
@@ -115,14 +118,27 @@ const Sidebar = () => {
     >
       <div className="pb-5">
         {/* Top menu */}
-        <div className="flex justify-between items-center">
-          <img src={assets.logo} alt="logo" className="max-w-40" />
+        <div className=" flex justify-between  items-center ">
+          <div className="flex items-center gap-2">
+            <div className=" w-12 h-12 pr-1 pt-1 bg-white/10 rounded-full flex items-center justify-center bg-gradient-to-br from-violet-700/30 to-blue-700/30 backdrop-blur-xl shadow-lg animate-pulse ">
+              <Send className="w-8 h-8 text-white/60" />
+            </div>
+            <p className="text-3xl font-bold text-gray-400  bg-clip-text">
+              <Typewriter
+                words={["Chatterly"]}
+                loop={0}
+                cursor
+                cursorStyle="_"
+                typeSpeed={100}
+                deleteSpeed={75}
+                delaySpeed={5000}
+              />
+            </p>
+          </div>
+
           <div className="relative py-2 group">
-            <img
-              src={assets.menu_icon}
-              alt="Menu"
-              className="max-h-5 cursor-pointer"
-            />
+            <MoreVertical className="max-h-5 cursor-pointer" />
+
             <div className="absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block">
               <p
                 className="cursor-pointer text-sm hover:text-blue-400 transition-colors"
@@ -142,7 +158,7 @@ const Sidebar = () => {
         </div>
         {/* Search bar */}
         <div className="bg-[#282142] rounded-full flex items-center gap-2 py-3 px-4 mt-4 mb-3">
-          <img src={assets.search_icon} alt="Search" className="w-4" />
+          <Search className="w-5" />
           <input
             value={input}
             onChange={handleInputChange}

@@ -38,7 +38,7 @@ const getUsersForCurrentUser = async (req, res) => {
     const userIds = messagedUsersRaw.map((u) => u._id);
 
     const users = await User.find({ _id: { $in: userIds } }).select(
-      "fullName avatar _id"
+      "fullName avatar _id bio"
     );
 
     const unseenCounts = {};
@@ -55,6 +55,7 @@ const getUsersForCurrentUser = async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       avatar: user.avatar,
+      bio: user.bio,
       unseenMessages: unseenCounts[user._id] || 0,
     }));
 
