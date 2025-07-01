@@ -18,6 +18,8 @@ export const io = new Server(server, {
     origin: process.env.CORS_ORIGIN || "http://localhost:5173",
     credentials: true,
   },
+  pingTimeout: 10000,
+  pingInterval: 5000,
 });
 // Online users
 export const socketToUserMap = {};
@@ -39,17 +41,19 @@ io.on("connection", (socket) => {
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
-    console.log("User disconnected:", userId);
+    setTimeout(() => {
+      console.log("User disconnected:", userId);
 
-    if (userId && userSocketMap[userId]) {
-      userSocketMap[userId].delete(socket.id);
+      if (userId && userSocketMap[userId]) {
+        userSocketMap[userId].delete(socket.id);
 
-      if (userSocketMap[userId].size === 0) {
-        delete userSocketMap[userId];
+        if (userSocketMap[userId].size === 0) {
+          delete userSocketMap[userId];
+        }
+
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
       }
-
-      io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    }
+    }, 1000);
   });
 });
 

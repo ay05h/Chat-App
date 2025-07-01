@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       });
       if (data.success) {
         setAuthUser(data.data.user);
-        connectSocket(data.user);
+        connectSocket(data.data.user);
       }
     } catch (err) {
       try {
@@ -30,15 +30,14 @@ export const AuthProvider = ({ children }) => {
             withCredentials: true,
           }
         );
-
+        console.log(refresh);
         if (refresh.data?.accessToken) {
-          // Try checking auth again after refresh
-          const { data: newData } = await axios.get("/api/v1/user/check", {
+          const { data } = await axios.get("/api/v1/user/check", {
             withCredentials: true,
           });
-          if (newData.success) {
-            setAuthUser(newData.user);
-            connectSocket(newData.user);
+          if (data.success) {
+            setAuthUser(data.data.user);
+            connectSocket(data.data.user);
           }
         }
       } catch (refreshError) {
@@ -127,11 +126,14 @@ export const AuthProvider = ({ children }) => {
   //Connect socket Function
   const connectSocket = (userData) => {
     if (!userData) return;
-    if (socket && socket.connected) return;
-
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
     const newSocket = io(backendUrl, {
       query: { userId: userData._id },
       withCredentials: true,
+      autoConnect: false,
     });
 
     newSocket.on("connect", () => {
@@ -145,15 +147,15 @@ export const AuthProvider = ({ children }) => {
     newSocket.on("getOnlineUsers", (userIds) => {
       SetOnlineUsers(userIds);
     });
+    newSocket.connect();
 
     setSocket(newSocket);
   };
 
   useEffect(() => {
     checkAuth();
-
     return () => {
-      if (socket) {
+      if (socket && socket.connected) {
         socket.disconnect();
         setSocket(null);
       }
