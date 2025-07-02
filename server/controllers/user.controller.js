@@ -4,9 +4,13 @@ import { generateAccessAndRefereshToken } from "../utils/generateToken.js";
 import { ApiError } from "./../utils/ApiError.js";
 import { ApiResponse } from "./../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+const isProd = process.env.NODE_ENV === "production";
 const options = {
   httpOnly: true,
-  secure: true,
+  secure: isProd,
+  sameSite: isProd ? "None" : "Lax", // Important
+  path: "/",
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
 const signup = async (req, res) => {
