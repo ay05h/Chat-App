@@ -2,6 +2,9 @@
 
 A modern real-time chat application with authentication, user profiles, and media sharing.
 
+[Live Preview](https://chat-app-six-ecru.vercel.app)
+
+
 ---
 
 ## Project Structure
