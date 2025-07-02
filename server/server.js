@@ -11,6 +11,7 @@ dotenv.config({
 });
 const app = express();
 const server = http.createServer(app);
+console.log("frontend : ", process.env.CORS_ORIGIN);
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,

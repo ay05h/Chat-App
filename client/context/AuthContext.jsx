@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+console.log("backend :", backendUrl);
 axios.defaults.baseURL = backendUrl;
 
 export const AuthContext = createContext();
@@ -12,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
   const [onlineUsers, SetOnlineUsers] = useState([]);
 
-  const socketRef = useRef(null); // ✅ Reliable reference
+  const socketRef = useRef(null);
 
   const checkAuth = async () => {
     try {
