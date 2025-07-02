@@ -31,7 +31,7 @@ export const io = new Server(server, {
   pingInterval: 10000,
 });
 // Online users
-const userSocketMap = {};
+export const userSocketMap = {};
 
 // Socket.io connection handling
 io.on("connection", (socket) => {
@@ -43,8 +43,9 @@ io.on("connection", (socket) => {
       userSocketMap[userId] = new Set();
     }
     userSocketMap[userId].add(socket.id);
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   }
+
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
     setTimeout(() => {

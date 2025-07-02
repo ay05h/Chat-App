@@ -3,7 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import mongoose from "mongoose";
 import { uploadToCloudinary } from "../utils/Cloudinary.js";
-import { io, socketToUserMap } from "../server.js";
+import { io, userSocketMap } from "../server.js";
 import User from "../models/user.model.js";
 const getUsersForCurrentUser = async (req, res) => {
   try {
@@ -153,14 +153,17 @@ const sendMessage = async (req, res) => {
       content,
     };
     const newMessage = await Message.create(messageData);
-    const receiverSocketId = socketToUserMap[receiver.toString()];
+    const receiverSocketIds = userSocketMap[receiver.toString()];
 
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
-      io.to(receiverSocketId).emit("addToUserList", {
-        _id: sender,
-        fullName: req.user.fullName,
-        profilePic: req.user.profilePic,
+    if (receiverSocketIds && receiverSocketIds.size > 0) {
+      receiverSocketIds.forEach((socketId) => {
+        io.to(socketId).emit("newMessage", newMessage);
+        io.to(socketId).emit("addToUserList", {
+          _id: sender,
+          fullName: req.user.fullName,
+          profilePic: req.user.profilePic,
+          bio: req.user.bio,
+        });
       });
     }
 
