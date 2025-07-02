@@ -1,7 +1,8 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
+
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 axios.defaults.baseURL = backendUrl;
 
@@ -10,7 +11,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
   const [onlineUsers, SetOnlineUsers] = useState([]);
-  const [socket, setSocket] = useState(null);
+
+  const socketRef = useRef(null); // ✅ Reliable reference
 
   const checkAuth = async () => {
     try {
@@ -26,11 +28,8 @@ export const AuthProvider = ({ children }) => {
         const refresh = await axios.post(
           "/api/v1/user/refresh-token",
           {},
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
-        console.log(refresh);
         if (refresh.data?.accessToken) {
           const { data } = await axios.get("/api/v1/user/check", {
             withCredentials: true,
@@ -40,13 +39,12 @@ export const AuthProvider = ({ children }) => {
             connectSocket(data.data.user);
           }
         }
-      } catch (refreshError) {
+      } catch {
         setAuthUser(null);
       }
     }
   };
 
-  //Login function
   const login = async (credentials) => {
     try {
       const { data } = await axios.post(`/api/v1/user/login`, credentials, {
@@ -62,7 +60,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Login Failed");
-      console.error(err);
     }
   };
 
@@ -80,7 +77,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "SignUp Failed");
-      console.error(err.message);
       return false;
     }
   };
@@ -90,18 +86,16 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axios.post(
         "/api/v1/user/logout",
         {},
-        {
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
 
       if (data.success) {
         setAuthUser(null);
         SetOnlineUsers([]);
         toast.success(data.message);
-        if (socket) {
-          socket.disconnect();
-          setSocket(null);
+        if (socketRef.current) {
+          socketRef.current.disconnect();
+          socketRef.current = null;
         }
       } else {
         toast.error(data.message);
@@ -123,17 +117,22 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  //Connect socket Function
   const connectSocket = (userData) => {
     if (!userData) return;
-    if (socket) {
-      socket.disconnect();
-      setSocket(null);
+
+    if (socketRef.current) {
+      socketRef.current.off("connect");
+      socketRef.current.off("disconnect");
+      socketRef.current.off("getOnlineUsers");
+      socketRef.current.disconnect();
+      socketRef.current = null;
     }
+
     const newSocket = io(backendUrl, {
       query: { userId: userData._id },
       withCredentials: true,
-      autoConnect: false,
+      transports: ["websocket"],
+      secure: true,
     });
 
     newSocket.on("connect", () => {
@@ -147,17 +146,16 @@ export const AuthProvider = ({ children }) => {
     newSocket.on("getOnlineUsers", (userIds) => {
       SetOnlineUsers(userIds);
     });
-    newSocket.connect();
 
-    setSocket(newSocket);
+    socketRef.current = newSocket;
   };
 
   useEffect(() => {
     checkAuth();
     return () => {
-      if (socket && socket.connected) {
-        socket.disconnect();
-        setSocket(null);
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
       }
     };
   }, []);
@@ -166,7 +164,7 @@ export const AuthProvider = ({ children }) => {
     axios,
     authUser,
     onlineUsers,
-    socket,
+    socket: socketRef.current,
     login,
     signup,
     logout,

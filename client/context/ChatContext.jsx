@@ -54,7 +54,9 @@ export const ChatProvider = ({ children }) => {
   };
 
   const subscribeToMessage = () => {
-    if (!socket) return;
+    if (!socket || socket.disconnected) return;
+    socket.off("newMessage");
+    socket.off("addToUserList");
     socket.on("newMessage", (newMessage) => {
       if (selectedUser && newMessage.sender === selectedUser._id) {
         newMessage.isRead = true;
@@ -88,14 +90,19 @@ export const ChatProvider = ({ children }) => {
   };
 
   const unSubscribeToMessage = () => {
-    if (socket) socket.off("newMessage");
+    if (!socket) return;
+    socket.off("newMessage");
+    socket.off("addToUserList");
   };
 
   useEffect(() => {
-    subscribeToMessage();
+    if (socket?.connected) {
+      subscribeToMessage();
+    } else if (socket) {
+      socket.once("connect", subscribeToMessage);
+    }
     return () => unSubscribeToMessage();
   }, [socket, selectedUser]);
-
   const value = {
     messages,
     users,

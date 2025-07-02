@@ -8,7 +8,7 @@ const isProd = process.env.NODE_ENV === "production";
 const options = {
   httpOnly: true,
   secure: isProd,
-  sameSite: isProd ? "None" : "Lax", // Important
+  sameSite: isProd ? "None" : "Lax",
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };

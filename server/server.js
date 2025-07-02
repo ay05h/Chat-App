@@ -11,6 +11,15 @@ dotenv.config({
 });
 const app = express();
 const server = http.createServer(app);
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
+app.use(express.json({ limit: "4mb" }));
+app.use(express.urlencoded({ extended: true, limit: "4mb" }));
+app.use(cookieParser());
 
 // Socket.io setup
 export const io = new Server(server, {
@@ -18,54 +27,36 @@ export const io = new Server(server, {
     origin: process.env.CORS_ORIGIN,
     credentials: true,
   },
-  pingTimeout: 10000,
-  pingInterval: 5000,
+  pingTimeout: 25000,
+  pingInterval: 10000,
 });
 // Online users
-export const socketToUserMap = {};
-
-// Socket.io connection handling
 const userSocketMap = {};
 
+// Socket.io connection handling
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
-  console.log("User connected:", userId);
+  console.log("User connected:", userId, socket.id);
 
   if (userId) {
     if (!userSocketMap[userId]) {
       userSocketMap[userId] = new Set();
     }
     userSocketMap[userId].add(socket.id);
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   }
-
-  io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
   socket.on("disconnect", () => {
     setTimeout(() => {
-      console.log("User disconnected:", userId);
-
       if (userId && userSocketMap[userId]) {
         userSocketMap[userId].delete(socket.id);
-
-        if (userSocketMap[userId].size === 0) {
-          delete userSocketMap[userId];
-        }
-
+        if (userSocketMap[userId].size === 0) delete userSocketMap[userId];
         io.emit("getOnlineUsers", Object.keys(userSocketMap));
       }
+      console.log("Socket disconnected:", userId, socket.id);
     }, 1000);
   });
 });
-
-app.use(express.json({ limit: "4mb" }));
-app.use(express.urlencoded({ extended: true, limit: "4mb" }));
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  })
-);
-app.use(cookieParser());
 
 // Importing routes
 import userRouter from "./router/user.router.js";
@@ -90,9 +81,16 @@ app.use((err, req, res, next) => {
 // Database connection
 await connectDB();
 
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
-  server.listen(PORT, () => console.log(`Server is running on port : ${PORT}`));
-}
+// this is for vercel
 
-export default server;
+// if (process.env.NODE_ENV !== "production") {
+//   const PORT = process.env.PORT || 5000;
+//   server.listen(PORT, () => console.log(`Server is running on port : ${PORT}`));
+// }
+
+// export default server;
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port: ${PORT}`);
+});
