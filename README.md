@@ -176,6 +176,9 @@ Content-Type: application/json
 ```
 
 ---
+## Support
+
+For issues, please open a GitHub issue.
 
 ## License
 
