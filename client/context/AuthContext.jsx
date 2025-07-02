@@ -134,6 +134,10 @@ export const AuthProvider = ({ children }) => {
       withCredentials: true,
       transports: ["websocket"],
       secure: true,
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
     });
 
     newSocket.on("connect", () => {
