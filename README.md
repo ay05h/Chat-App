@@ -27,7 +27,7 @@ Chat-App/
 ### Installation
 
 ```sh
-git clone https://github.com/yourusername/Chat-App.git
+git clone https://github.com/ay05h/Chat-App.git
 cd Chat-App
 cd client && npm install
 cd ../server && npm install
